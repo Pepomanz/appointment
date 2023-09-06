@@ -87,7 +87,7 @@ RESPONSE
 ## Installation
 
 ```bash
-$ yarn install
+$ docker compose up
 ```
 
 ## Running the app
