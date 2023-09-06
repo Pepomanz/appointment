@@ -6,7 +6,6 @@ import Appointment from '../entity/appointment.entity';
 import Comment from 'src/entity/comment.entity';
 import { AppointmentDetail, AppointmentStatusDetail, CommentDetail } from "../response/Appointment";
 import { CommentRequest } from 'src/request/Appointment';
-import { Logger } from './logger/logger.service';
 
 @Injectable()
 export class AppointmentService {
@@ -18,26 +17,26 @@ export class AppointmentService {
         @InjectRepository(Appointment)
         private appointmentRepository: Repository<Appointment>,
     ) {}
-    private readonly logger: Logger = new Logger();
 
     async findNonArchieveList(): Promise<AppointmentDetail[]> {
       const data = await this.appointmentRepository
       .createQueryBuilder("appointment")
       .leftJoinAndSelect("appointment.user", "user")
+      .leftJoinAndSelect("appointment.comment", "comment")
       .where("appointment.is_archieve = :is_archieve", { is_archieve: false })
       .getMany()
       const result: AppointmentDetail[] = data.map(it => {
+        const comment: CommentDetail[] = it.comment.map(it => ({detail: it.detail, createdBy: it.user?.firstName, createdAt: it.createdAt.getTime()}));
         return {
           title: it.title,
           description: it.description,
           status: it.appointmentStatusId,
-          comments: [],
+          comments: comment,
           createdByName: it.user.firstName + it.user.lastName,
           createdByEmail: it.user.email,
           createdAt: it.createdAt.getTime()
         }
       });
-      this.logger.log('findNonArchieveList done');
       return result;
     }
 
@@ -73,23 +72,6 @@ export class AppointmentService {
         }
       );
       return result;
-    }
-
-    async findCommentByAppointmentId(appointmentId: number): Promise<CommentDetail[]> {
-      const result = await this.commentRepository
-        .createQueryBuilder("comment")
-        .leftJoinAndSelect("comment.user", "user")
-        .where("comment.appointment_id = :appointment_id", { appointment_id: appointmentId })
-        .getMany()
-      return result.map(
-        it => {
-          return {
-            detail: it.detail,
-            createdBy: it.user.firstName + it.user.lastName,
-            createdAt: it.createdAt.getTime()
-          };
-        }
-      );
     }
 
     async insertComment(request: CommentRequest): Promise<void>{

@@ -14,7 +14,7 @@ export interface AppointmentDetail {
     title: string
     description: string
     status: AppointmentStatusEnum
-    comments: Comment[]
+    comments: CommentDetail[]
     createdByName: string
     createdByEmail: string
     createdAt: number

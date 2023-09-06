@@ -1,7 +1,7 @@
 import { Entity, PrimaryColumn, Column, ManyToOne, JoinColumn, OneToMany } from "typeorm";
 import User  from './user.entity';
 import AppointmentStatus from './appointment_status.entity';
-// import Comment from './comment.entity';
+import Comment from './comment.entity';
 
 @Entity({ name: 'appointment'})
 export default class Appointment {
@@ -33,9 +33,9 @@ export default class Appointment {
     @JoinColumn({ name: "user_id" })
     user: User;
 
-    // @OneToMany(type => Comment, comment => comment.appointmentId)
-    // @JoinColumn({ name: "appointment_id" })
-    // comment?: Comment[];
+    @OneToMany(type => Comment, comment => comment.appointmentId)
+    @JoinColumn({ name: "appointment" })
+    comment?: Comment[];
 
     @ManyToOne(type => AppointmentStatus, status => status.appointmentStatusId)
     @JoinColumn({ name: "appointment_status_id" })
