@@ -6,7 +6,7 @@ import {
   AppointmentStatusDetail,
 } from '../response/Appointment';
 
-@Controller('appointments')
+@Controller('api/appointments')
 export class AppointmentController {
   constructor(private readonly appointmentService: AppointmentService) {}
 
