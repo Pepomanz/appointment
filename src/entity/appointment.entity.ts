@@ -29,15 +29,15 @@ export default class Appointment {
     @Column({ name: 'appointment_status_id'})
     appointmentStatusId: number;
 
-    @ManyToOne(type => User, user => user.userId)
+    @ManyToOne(type => User, user => user.appointments)
     @JoinColumn({ name: "user_id" })
     user: User;
 
-    @OneToMany(type => Comment, comment => comment.appointmentId)
+    @OneToMany(type => Comment, comment => comment.appointment)
     @JoinColumn({ name: "appointment" })
-    comment?: Comment[];
+    comments: Comment[];
 
-    @ManyToOne(type => AppointmentStatus, status => status.appointmentStatusId)
+    @ManyToOne(type => AppointmentStatus, status => status.appointments)
     @JoinColumn({ name: "appointment_status_id" })
     appointmentStatus: AppointmentStatus;
 }

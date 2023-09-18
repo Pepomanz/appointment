@@ -23,11 +23,11 @@ export default class Comment {
     @Column({ name: 'created_at'})
     createdAt: Date;
     
-    @ManyToOne(type => User, user => user.userId)
+    @ManyToOne(type => User, user => user.comments)
     @JoinColumn({ name: "user_id" })
     user: User;
 
-    @ManyToOne(type => Appointment, appointment => appointment.appointmentId)
+    @ManyToOne(type => Appointment, appointment => appointment.comments)
     @JoinColumn({ name: "appointment_id" })
     appointment: Appointment;
 }

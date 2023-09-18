@@ -6,6 +6,7 @@ import Appointment from '../entity/appointment.entity';
 import Comment from 'src/entity/comment.entity';
 import { AppointmentDetail, AppointmentStatusDetail, CommentDetail } from "../response/Appointment";
 import { CommentRequest } from 'src/request/Appointment';
+import User from 'src/entity/user.entity';
 
 @Injectable()
 export class AppointmentService {
@@ -22,17 +23,18 @@ export class AppointmentService {
       const data = await this.appointmentRepository
       .createQueryBuilder("appointment")
       .leftJoinAndSelect("appointment.user", "user")
-      .leftJoinAndSelect("appointment.comment", "comment")
+      .leftJoinAndSelect("appointment.comments", "comment")
+      .leftJoinAndSelect("comment.user", "usc")
       .where("appointment.is_archieve = :is_archieve", { is_archieve: false })
       .getMany()
       const result: AppointmentDetail[] = data.map(it => {
-        const comment: CommentDetail[] = it.comment.map(it => ({detail: it.detail, createdBy: it.user?.firstName, createdAt: it.createdAt.getTime()}));
+        const comments: CommentDetail[] = it.comments.map(it => ({detail: it.detail, createdBy: this.getFullName(it.user), createdAt: it.createdAt.getTime()}));
         return {
           title: it.title,
           description: it.description,
           status: it.appointmentStatusId,
-          comments: comment,
-          createdByName: it.user.firstName + it.user.lastName,
+          comments: comments,
+          createdByName: this.getFullName(it.user),
           createdByEmail: it.user.email,
           createdAt: it.createdAt.getTime()
         }
@@ -44,16 +46,16 @@ export class AppointmentService {
       const data = await this.appointmentRepository
       .createQueryBuilder("appointment")
       .leftJoinAndSelect("appointment.user", "user")
+      .leftJoinAndSelect("appointment.comments", "comment")
+      .leftJoinAndSelect("comment.user", "usc")
       .where("appointment.appointment_id = :appointment_id", { appointment_id: appointmentId })
       .getOne();
-      if (data === undefined) {
-        throw new NotFoundException();
-      }
+      const comments: CommentDetail[] = data.comments.map(it => ({detail: it.detail, createdBy: this.getFullName(it.user), createdAt: it.createdAt.getTime()}));
       const result: AppointmentDetail = {
         title: data.title,
         description: data.description,
         status: data.appointmentStatusId,
-        comments: [],
+        comments: comments,
         createdByName: data.user.firstName + data.user.lastName,
         createdByEmail: data.user.email,
         createdAt: data.createdAt.getTime()
@@ -86,6 +88,10 @@ export class AppointmentService {
         user: null
       };
       this.commentRepository.save(comment);
+    }
+
+    private getFullName(user: User){
+      return `${user.firstName} ${user.lastName}`
     }
 
 }

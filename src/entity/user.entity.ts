@@ -1,4 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, JoinColumn } from "typeorm";
+import Appointment from "./appointment.entity";
+import Comment from "./comment.entity";
 
 @Entity({ name: 'user'})
 export default class  User {
@@ -22,4 +24,13 @@ export default class  User {
 
     @Column({ name: 'created_at'})
     createdAt: Date;
-}
+
+    @OneToMany(type => Appointment, appointment => appointment.user)
+    @JoinColumn({ name: "userId"})
+    appointments: Appointment[];
+
+    @OneToMany(type => Comment, comment => comment.user)
+    @JoinColumn({ name: "user_id" })
+    comments: Comment[];
+
+} 

@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, JoinColumn  } from "typeorm";
+import Appointment from "./appointment.entity";
 
 @Entity({ name: 'appointment_status'})
 export default class  AppointmentStatus {
@@ -13,4 +14,8 @@ export default class  AppointmentStatus {
 
     @Column({ name: 'created_at'})
     createdAt: Date;
+
+    @OneToMany(type => Appointment, status => status.appointmentStatus)
+    @JoinColumn({ name: "appointment_status_id" })
+    appointments: Appointment[];
 }
