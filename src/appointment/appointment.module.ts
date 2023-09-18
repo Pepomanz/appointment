@@ -8,8 +8,10 @@ import AppointmentStatus from '../entity/appointment_status.entity';
 import Comment from '../entity/comment.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Appointment, AppointmentStatus, Comment])],
+  imports: [
+    TypeOrmModule.forFeature([User, Appointment, AppointmentStatus, Comment]),
+  ],
   controllers: [AppointmentController],
-  providers: [AppointmentService]
+  providers: [AppointmentService],
 })
 export class AppointmentModule {}
