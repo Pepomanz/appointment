@@ -21,6 +21,8 @@ export class AppointmentService {
     private appointmentStatusRepository: Repository<AppointmentStatus>,
     @InjectRepository(Appointment)
     private appointmentRepository: Repository<Appointment>,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
   ) {}
 
   async findNonArchieveList(): Promise<AppointmentDetail[]> {
@@ -92,6 +94,14 @@ export class AppointmentService {
   }
 
   async insertComment(request: CommentRequest): Promise<void> {
+    const user = await this.userRepository.findOneBy({ userId: request.userId });
+    if (user == undefined) {
+      throw new NotFoundException('User not found');
+    }
+    const appointment = await this.appointmentRepository.findOneBy({ appointmentId: request.appointmentId });
+    if (appointment == undefined) {
+      throw new NotFoundException('Appointment not found');
+    }
     const comment: Comment = {
       commentId: null,
       userId: request.userId,
